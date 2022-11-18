@@ -1,0 +1,14 @@
+name: OptimalControl_Env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.7
+  - numpy
+  - scipy
+  - matplotlib
+  - control
+  - slycot
+  - jupyterlab
+  - nodejs
+  - ipympl
