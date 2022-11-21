@@ -35,8 +35,8 @@ function [C,M,number_elements] = define_grid(omegai,si,tau,deltav,L2,Na,Mv,enabl
   %vmax,sl
 
   %problem with Ms
-  v = linspace(0, (Mv-1)*deltav, Mv) ;
-  s = linspace(0, (Ms-1)*deltas, Ms);
+  v = linspace(0, (Mv*deltav, Mv) ;
+  s = linspace(0, Ms*deltas, Ms);
 
   %fill grid
   for k = 1:h
@@ -95,6 +95,10 @@ function [C,M,number_elements] = define_grid(omegai,si,tau,deltav,L2,Na,Mv,enabl
             
             %cannot go backwards
             if(s_next<s_current)
+              cost = inf;
+            end
+         
+            if((v_current==0) &&(s_next>s_current))
               cost = inf;
             end
             
