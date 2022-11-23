@@ -1,4 +1,4 @@
-function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
+function [c] = timeoptimalpathspeed2(omegai,si,tau,deltav,L2,Na,Mv)
 %parameters:
 %omegai     vector,   given omegavector
 %si...      vector,   given distance vector
@@ -21,11 +21,12 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
   Ms = sl/deltas +1; %elements of s-grid
   %Mv = elements of v-grid is already given
   h = length(si);   %todo, assumption made
-  number_elements = Mv*Ms;
 
   %problem with Ms
   v = linspace(0, (Mv-1)*deltav, Mv) ;
   s = linspace(0, (Ms-1)*deltas, Ms);
+  C = ones(h,Mv*Ms,Mv*Ms)*inf;
+  M = zeros(h,Mv*Ms,Mv*Ms);
 
   %fill grid
   for k = 1:h
@@ -33,12 +34,10 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
       for s_current_Idx = 1:Ms
         for v_nextIdx = 1:Mv 
           for s_nextIdx = 1:Ms
-
             s_current = s(s_current_Idx);
             s_next    = s(s_nextIdx);
             v_current = v(v_currentIdx);
             v_next    = v(v_nextIdx);
-
             c2 = ((s_next-s_current-v_current)*deltas - (v_next-v_current)*deltav*tau/2)/(tau^3*(1/6-1/4));
             c1 = (v_next-v_current)*deltav/tau-c2*tau/2;
 
@@ -47,22 +46,19 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
             else
               vintmax = v_current;
             end
-            
-            if(enable_constraints)
-              if(abs(c1)>L1)
-                cost = inf;
-              elseif(abs(c1+c2*tau)>L1)
-                cost = inf;
-              elseif(omegai(k)*vintmax^2 > L2)
-                cost = inf;
-              elseif(vintmax>L3)
-                cost = inf;
-              else
-                cost = (si(k) - s_current)^2; %assumption about quadratic error
-              end
-            else 
-               cost = (si(k) - s_current)^2; %assumption about quadratic error
-            end 
+          
+            if(abs(c1)>L1)
+              cost = inf;
+            elseif(abs(c1+c2*tau)>L1)
+              cost = inf;
+            elseif(omegai(k)*vintmax^2 > L2)
+              cost = inf;
+            elseif(vintmax>L3)
+              cost = inf;
+            else
+              cost = (si(k) - s_current)^2; %assumption about quadratic error
+            end
+   
             %beginning contraint
             if(k==1) %s(0)=0 && %v(0)=0
               if(not((s_current==0) && (v_current==0)))
@@ -83,9 +79,8 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
             end
            
             %assign cost to grid
-            C{k}{s_current_Idx+Ms*(v_currentIdx-1)}{s_nextIdx+Ms*(v_nextIdx-1)} = cost;
-            M{k}{s_current_Idx+Ms*(v_currentIdx-1)}{s_nextIdx+Ms*(v_nextIdx-1)} = s_nextIdx+Ms*(v_nextIdx-1);
-%             cost_grid(s_nextIdx+(v_nextIdx-1)*Mv+(s_current_Idx-1)*(Ms*Mv)+ (v_currentIdx-1) * (Ms*Mv*Ms),k) = cost;
+            C(k,s_current_Idx+Ms*(v_currentIdx-1),s_nextIdx+Ms*(v_nextIdx-1)) = cost;
+            M(k,s_current_Idx+Ms*(v_currentIdx-1),s_nextIdx+Ms*(v_nextIdx-1)) = s_nextIdx+Ms*(v_nextIdx-1);          
           end
         end
       end
@@ -94,18 +89,20 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
 
 %% second: calculate optimal paths from grid
   % terminal cost
-  Jh = zeros(1,number_of_elements);
-  h = length(M);
+  number_of_elements = Mv*Ms;
+  T = zeros(1,number_of_elements);
+  size_M = size(M);
+  h = size_M(1);
   for l = 1:length(T)
     J_{h+1}{l} = T(l);
   end
   for k = h:-1:1
-    ni = length(M{k}); % state dimension
+    ni = number_of_elements; % state dimension
     for i=1:ni
-      nj = length(M{k}{i});
+      nj = number_of_elements;
       caux = zeros(1,nj);
       for j = 1:nj
-        caux(j) = C{k}{i}{j} + J_{k+1}{M{k}{i}{j}};
+        caux(j) = C(k,i,j) + J_{k+1}{M(k,i,j)};
       end
       [a,b] = sort(caux);
       J_{k}{i} = a(1); J{k}{i} = J_{k}{i};
@@ -115,7 +112,7 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
           u{k}{i}(ell) = b(ell);
         else
         break;
-      end
+        end
       end
     end
   end
