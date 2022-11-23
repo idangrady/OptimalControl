@@ -20,7 +20,7 @@ function [c] = timeoptimalpathspeed2(omegai,si,tau,deltav,L2,Na,Mv)
   sl = si(end); %the largest s element
   Ms = sl/deltas; %elements of s-grid
   %Mv = elements of v-grid is already given
-  h = length(si);   %expected that this is possible
+  h_max = Ms;   %Ms*deltas=smax, so slowest possible way
 
   %problem with Ms
   v = 0:deltav:Mv*deltav;
@@ -58,7 +58,7 @@ function [c] = timeoptimalpathspeed2(omegai,si,tau,deltav,L2,Na,Mv)
             elseif(vintmax>L3)
               cost = inf;
             else
-              cost = (si(k) - s_normed_current*deltas)^2; %assumption about quadratic error
+              cost = (si(k) - s_normed_current)^2; %assumption about quadratic error
             end
    
             %beginning contraint
@@ -137,6 +137,11 @@ function [c] = timeoptimalpathspeed2(omegai,si,tau,deltav,L2,Na,Mv)
   end
 
 %% fourth: extraxt optimal path and optimal speed
+
+  sl = si(end); %the largest s element
+  Ms = sl/deltas +1; %elements of s-grid
+  v = linspace(0, (Mv-1)*deltav, Mv) ;
+  s = linspace(0, (Ms-1)*deltas, Ms);
   len = length(u_one);
   s_one = zeros(len,1);
   v_one = zeros(len,1);
@@ -156,10 +161,10 @@ function [c] = timeoptimalpathspeed2(omegai,si,tau,deltav,L2,Na,Mv)
   c = zeros(2,length(v_one));
   for i = 1:length(v_one)
     if(i<length(v_one))
-      v_normed_current = v_one(i)/deltav;
-      v_normed_next = v_one(i+1)/deltav;
-      s_normed_current = s_one(i)/deltas;
-      s_normed_next = s_one(i+1)/deltas;
+      v_normed_current = v_one(i);
+      v_normed_next = v_one(i+1);
+      s_normed_current = s_one(i);
+      s_normed_next = s_one(i+1);
       c(2,i) = ((s_normed_next-s_normed_current-v_normed_current)*deltas - (v_normed_next-v_normed_current)*deltav*tau/2)/(tau^3*(1/6-1/4));
       c(1,i) =(v_normed_next-v_normed_current)*deltav/tau-c(2,i)*tau/2;
     else
@@ -168,14 +173,6 @@ function [c] = timeoptimalpathspeed2(omegai,si,tau,deltav,L2,Na,Mv)
     end
   end
 
-figure()
-hold on
-plot(v_one,"g")
-plot(s_one,"b-")
-plot(si,"rx")
-grid on;
-hold off
-legend("speed","optimal distance","wished distance")
-  
+
 end
 
