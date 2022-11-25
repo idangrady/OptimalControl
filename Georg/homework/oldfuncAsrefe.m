@@ -1,4 +1,4 @@
-function [C,M,number_elements] = define_grid(omegai,si,tau,deltav,L2,Na,Mv,enable_constraints)
+% here come the function//
 
 enable_constraints=true;
 L1 = deltav*Na/tau;
@@ -10,19 +10,19 @@ h = length(si);
 number_elements = Mv*Ms;
 grid = zeros(Mv*Ms,Ms*Mv);
 
+Mgrid = zeros(Mv*Ms*Ms*Mv, h);
 
 %problem with Ms
 v = linspace(0, Mv, Mv+1) ; % I changed the multiplication as I dont believe it is necessary
 s = linspace(0, Ms, Ms+1);  % I changed the multiplication as I dont believe it is necessary
-i =0;
-o =0;
+
+for k = 1:h
+i =1;
 for v_currentIdx = 1:Mv 
   for s_current_Idx = 1:Ms
-      i=i+1;
-      o =1;
     for v_nextIdx = 1:Mv 
       for s_nextIdx = 1:Ms
-            
+
         s_current = s(s_current_Idx);
         s_next    = s(s_nextIdx);
         v_current = v(v_currentIdx);
@@ -52,7 +52,7 @@ for v_currentIdx = 1:Mv
     %             cost = c1 + c2;   %maybe wrong way to define the cost
                 cost =1; % (si(k) - s_current)^2; %assumption about quadratic error
               end
-            else  bbb                                                                                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            else 
                cost = 1;% (si(k) - s_current)^2; %assumption about quadratic error
             end
     
@@ -77,52 +77,47 @@ for v_currentIdx = 1:Mv
             end
 
         %assign cost to grid
-        grid(i,o) = cost;
-
+       Cgrid(i,k) = cost;
+       Mgrid(i,k) = s_nextIdx+Ms*(v_nextIdx-1);
+        i=i+1;
       %  grid(s_nextIdx+(v_nextIdx-1)*Mv+(s_current_Idx-1)*(Ms*Mv)+ (v_currentIdx-1) * (Ms*Mv*Ms),k) = cost;
-       o=o+1;
-
       end
     end
   end
 end
+end
 
-start_idx =2;
-goal_idx = Mv*Ms = 2; % this is not hard coded yet will be taken from the mv and Ms state;
 
-end_space = grid(:,goal_idx);
-cost_func =grid(:,goal_idx);
+block = Ms*Mv;
 
-policy = zeros(1,Ms*Mv);
-AccumelatedCost=(1,Mv*Ms);
+M_best_path_idx = zeros(Ms*Mv,h);
+policyM = zeros((Mv*Ms),h); 
 
-max_k = 10;
-for k 1:h % 
-  for currState = 1:Ms*Mv
-       if(start_idx ==goal_idx)
-       % break
-       return_val = 0; % change that to fit the constraint
-       break
-       end
+policyV = zeros((Mv*Ms),h); 
+V_best_path_idx = zeros(Ms*Mv,h);
 
-      % check whether we exceeded the max itteration and there is no path
-      % if K> maxk return false
+action= zeros((Mv*Ms),h);
+% Loop over all the next state and compare and find the min value between
+% them. 
+for k = 0:h-1 % go over all the maximu, st
 
-      % state space to get to Last node
-      exploreSpace = grid(:,currState);
-      for i 1:length(exploreSpace)
-          if(cost_func(i)==inf) % more efficient as it can not be updated
-            continue;
-          end
-      % each i corresponds to a specific index of state, velocity space. 
-          
-          if(grid(i,currState)) ==inf
-              continue;
-      end
-      % go from the end to the beginning. 
+    cur_k =cast(h-k,"uint8"); % lol not sure how to do it like in python 
 
-  
-  end
+    for currstate= 1:Mv*Ms
+    % Every block of Mv*Mv we only change the input variable ((0,0),(1,0)) ->
+    % ((0,1),(1,0_) only the origin state changes. Hence we need to find
+    % the smallest between those
+    
+    check_next_state = cast(currstate+ (currstate-1)*block,"uint8");
+    MS_val = Mgrid(check_next_state, cur_k);
+    if(policyM(check_next_state, cur_k)==0)
+        policyM(check_next_state, cur_k) = MS_val;
+        M_best_path_idx(currstate,cur_k) = (currstate-1)*block; % gives the ouput idx direct
+
+    elseif(MS_val < policyM(check_next_state, cur_k))
+        policyM(check_next_state, cur_k) = MS_val;
+        M_best_path_idx(currstate,k) = (currstate-1)*block; % gives the ouput idx direct
+    end
 end
 
 end
