@@ -48,6 +48,8 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
     end
     for s_kp1 =s_normed_current+1:Ms+1
       for v_kp1 = 1:Mv+1
+          c2 = ((s_kp1-s_normed_current-v_normed_current)*deltas - (v_kp1-v_normed_current)*deltav*tau/2)/(tau^3*(1/6-1/4));;
+          c1=(v_kp1-v_normed_current)*deltav/tau-C2(s_kp1,v_kp1)*tau/2;;
          C2(s_kp1,v_kp1) = ((s_kp1-s_normed_current-v_normed_current)*deltas - (v_kp1-v_normed_current)*deltav*tau/2)/(tau^3*(1/6-1/4));
          C1(s_kp1,v_kp1) = (v_kp1-v_normed_current)*deltav/tau-C2(s_kp1,v_kp1)*tau/2;
 %            C1_tmp = ((s_kp1-s_normed_current-v_normed_current)*deltas - (v_kp1-v_normed_current)*tau/3*deltav)/tau^2*6;

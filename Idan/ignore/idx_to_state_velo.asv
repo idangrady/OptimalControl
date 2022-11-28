@@ -1,0 +1,8 @@
+function [idx_v,idx_s] = idx_to_state_velo(idx, nun_v, nun_s)
+% assume Vs is first
+% so every num_vm, we increment vs by one
+
+idx_s = mod(idx, nun_v)-1;
+%idx_s = floor(idx/nun_v)+1;
+idx_v = idx - (idx_s * nun_s);
+end

@@ -1,1 +1,2 @@
 # OptimalControl
+idan/ignore/

@@ -9,7 +9,6 @@ function [C,M,number_elements] = define_grid(omegai,si,tau,deltav,L2,Na,Mv,enabl
 %Mv...      constant
 
 
-<<<<<<< Updated upstream
   %1st calculate limits
   L1 = deltav*Na/tau;
   %L2 is given

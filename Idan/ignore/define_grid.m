@@ -16,6 +16,9 @@ v = linspace(0, Mv, Mv+1) ; % I changed the multiplication as I dont believe it 
 s = linspace(0, Ms, Ms+1);  % I changed the multiplication as I dont believe it is necessary
 i =0;
 o =0;
+
+
+
 for v_currentIdx = 1:Mv 
   for s_current_Idx = 1:Ms
       i=i+1;
@@ -32,7 +35,7 @@ for v_currentIdx = 1:Mv
 
             c2 = ((s_next-s_current-v_current)*deltas - (v_next-v_current)*deltav*tau/2)/(tau^3*(1/6-1/4));
             c1 = (v_next-v_current)*deltav/tau-c2*tau/2;
-
+            
             if((c2<0) && (c1>0))
               vintmax = v_current-c1^2/2/c2;
             else
@@ -52,7 +55,7 @@ for v_currentIdx = 1:Mv
     %             cost = c1 + c2;   %maybe wrong way to define the cost
                 cost =1; % (si(k) - s_current)^2; %assumption about quadratic error
               end
-            else  bbb                                                                                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            else 
                cost = 1;% (si(k) - s_current)^2; %assumption about quadratic error
             end
     
@@ -121,7 +124,6 @@ for k 1:h %
       end
       % go from the end to the beginning. 
 
-  
   end
 end
 
