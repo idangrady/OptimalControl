@@ -1,2 +1,1 @@
 # OptimalControl
-idan/ignore/
