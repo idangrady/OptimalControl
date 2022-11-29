@@ -24,8 +24,8 @@ for next_state = 1:block
      [v_current, s_current] = idx_to_state_velo(curr_state, Mv);
      [v_next,s_next] = idx_to_state_velo(next_state, Mv);
      
-     s_current = deltas*(s_current);s_next =deltas*(s_next); % try this
-     v_next = deltav*(v_next);v_current =deltav*(v_current); % try this
+ %    s_current = deltas*(s_current);s_next =deltas*(s_next); % try this
+ %    v_next = deltav*(v_next);v_current =deltav*(v_current); % try this
      
      c2 = ((s_next-s_current-v_current)*deltas - (v_next-v_current)*deltav*tau/2)/(tau^3*(1/6-1/4));
      c1 = (v_next-v_current)*deltav/tau-c2*tau/2;
