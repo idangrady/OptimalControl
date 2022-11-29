@@ -27,8 +27,8 @@ for next_state = 1:block
  %    s_current = deltas*(s_current);s_next =deltas*(s_next); % try this
  %    v_next = deltav*(v_next);v_current =deltav*(v_current); % try this
      
-     c2 = ((s_next-s_current-v_current)*deltas - (v_next-v_current)*deltav*tau/2)/(tau^3*(1/6-1/4));
-     c1 = (v_next-v_current)*deltav/tau-c2*tau/2;
+     c2 = (((s_next-1)-(s_current-1)-(v_current-1))*deltas - ((v_next-1)-(v_current-1))*deltav*tau/2)/(tau^3*(1/6-1/4));
+     c1 = ((v_next-1)-(v_current-1))*deltav/tau-c2*tau/2;
 
       if((s_current*deltas >= si(i)) && (i<length(omegai)))
       i = i+1;
@@ -39,9 +39,9 @@ for next_state = 1:block
      C_2(curr_state, next_state) = c2;
 
             if((c2<0) && (c1>0))
-              vintmax = v_current-c1^2/2/c2;
+              vintmax = v_current*deltav-(c1^2)/(2*c2);
             else
-              vintmax = v_current;
+              vintmax = v_current*deltav;
             end
 
               if(abs(c1)>L1)
@@ -52,8 +52,8 @@ for next_state = 1:block
                 cost = inf;
               elseif(vintmax>L3)
                 cost = inf;
-              elseif (curr_state==next_state)
-            cost = inf;
+              %elseif (curr_state==next_state)
+            %cost = inf;
               else
                 cost =1; 
               end
