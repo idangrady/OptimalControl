@@ -2,7 +2,7 @@
 clc()
 clear
 
-delta = 20;
+delta = 7;
 d     = 1;
 r     = [0.1 0.2 0.6];
 hbar  = 10;
@@ -11,7 +11,6 @@ ep = 0.1; ell = 1; gamma = 1;
 
 
 r_11=r(3); r_00 =r(1);r_01 = r(2);
-d = 10;
 TotalStateAmount = 2^N;
 r={[1-r_00, 1-r_01; 1-r_01, 1-r_11], [r_00, r_01; r_01, r_11]};
 id=0:2^N-1; %index numbers
@@ -53,16 +52,35 @@ end
 
 
 cost = ones(1,2^N)*delta; % start with a full of grid which wants to terminate constantly
+cost_prev = ones(1,2^N)*delta; % start with a full of grid which wants to terminate constantly
+
 policy = zeros(hbar, TotalStateAmount);
 
+for h_ =1:hbar
+    for i =1:length(cost)
+     sun_ones_curr_state =sum(MatStateID(i,:),2)*d;
+     P_curr =P(i,:);
+     check_2 = cost_prev.*(P_curr); % getting the expected value based on the new cost
+     s_cost = check_2 *sun_ones_curr_state; % here i am not sure if we need to add the d or to multiply by the d
+     ss_cost =sum(s_cost);
+    cost(i) = min([cost(i), sum(ss_cost)]);
+     if(delta<=cost(i))
+    policy(h_, i) =1;
+    end
+    cost_prev = cost ;
+end
+end
+
+
+ssiu =1;
+%%
 for h_=1:hbar
     for i  = 1:TotalStateAmount
-    cost(i) = min([cost(i), sum(P(:,i) *sum(MatStateID(i,:),2)*d)]);
+     sss = sum(P(i,:) *sum(MatStateID(i,:),2)*d);
+    cost(i) = min([cost(i), sum(P(i,:) *sum(MatStateID(i,:),2)*d)]);
     if(delta<=cost(i))
     policy(h_, i) =1;
     end
     end
 end
-
-
 ss = 2;
