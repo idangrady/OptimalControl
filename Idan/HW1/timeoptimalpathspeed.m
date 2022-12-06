@@ -2,6 +2,7 @@ function [c] = timeoptimalpathspeed(omegai,si,tau,deltav,L2,Na,Mv)
 
 L1 = deltav*Na/tau;
 L3 = Mv*deltav;
+
 deltas = deltav * tau;
 sl = si(end); 
 Ms = sl/deltas; 
@@ -30,9 +31,11 @@ for next_state = 1:block
      c2 = (((s_next-1)-(s_current-1)-(v_current-1))*deltas - ((v_next-1)-(v_current-1))*deltav*tau/2)/(tau^3*(1/6-1/4));
      c1 = ((v_next-1)-(v_current-1))*deltav/tau-c2*tau/2;
 
-      if((s_current*deltas >= si(i)) && (i<length(omegai)))
-      i = i+1;
+    for i=length(si):-1:1
+      if(s_current*deltas<si(i))
+        omega = omegai(i);
       end
+    end
 
      %for future reference
      C_1(curr_state, next_state) = c1;
@@ -48,7 +51,7 @@ for next_state = 1:block
                 cost = inf;
               elseif(abs(c1+c2*tau)>L1)
                 cost = inf;
-              elseif(omegai(i)*vintmax^2 > L2)   
+              elseif(omega*vintmax^2 > L2)   
                 cost = inf;
               elseif(vintmax>L3)
                 cost = inf;
