@@ -30,6 +30,12 @@ for i=1:size(idBinary, 1) % size of rows
     current_all = current-all;
 
     
+    mul_1 = transpose(r{1}(id_TakeDecision(:,1) + (id_TakeDecision(:,2)-1)*n)); % from [0 to 1]
+    mul_3 = transpose(r{2}(id_TakeDecision(:,1)+ (id_TakeDecision(:,2)-1)*n));  % from [0 to 11]
+
+    %trans_prob_multipl=mul_1.*(sum_states(:, [1, end])==0)+mul_3.*sum_cur_states_;
+
+    
     P(sum((MatStateID-MatStateID(i, :))==-1, 2)>0, i)=0; %Substitute P{x_{t+1, l}=0 | x_{t, l}=1}=0
 
     wer = P(:, i)==1;
