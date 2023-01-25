@@ -1,5 +1,5 @@
-## OptimalControl
-# 4SC000 TUe MA course
+# OptimalControl
+## 4SC000 TUe MA course
 
 Optimal control deals with engineering problems in which an objective function is to be minimized (or maximized) by sequentially choosing a set of actions that determine the behavior of a system. Examples of such problems include mixing two fluids in the least amount of time, maximizing the fuel efficiency of a hybrid vehicle, flying an unmanned air vehicle from point A to B while minimizing reference tracking errors and minimizing the lap time for a racing car. Other somewhat more surprising examples are: how to maximize the probability of win in blackjack and how to obtain minimum variance estimates of the pose of a robot based on noisy measurements.
 
