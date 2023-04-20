@@ -40,3 +40,7 @@ for i = 0:round(Tmax/tau)-1
     xout=[xout, xiout(2:end, 1:end-2)'];
 end
 s =2;
+
+%%
+x = [1, 2];
+autocorr(x)
